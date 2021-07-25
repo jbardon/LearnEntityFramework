@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -9,15 +6,15 @@ using Xunit.Abstractions;
 
 // https://docs.microsoft.com/en-us/ef/core/querying/related-data/explicit
 // https://www.entityframeworktutorial.net/EntityFramework4.3/explicit-loading-with-dbcontext.aspx
-namespace LearnEntityFramework.EagerLoading
+namespace LearnEntityFramework.ExplicitLoading
 {
-    public class EagerLoadingTest : InMemoryDb<MyContext>
+    public class ExplicitLoadingTest : InMemoryDb<ExplicitLoadingContext>
     {
-        public EagerLoadingTest(ITestOutputHelper output) : base(output)
+        public ExplicitLoadingTest(ITestOutputHelper output) : base(output)
         {}
 
         [Fact]
-        public async Task Test1()
+        public async Task LoadAllChildren()
         {
             var parent = new Parent
             {
@@ -50,7 +47,7 @@ namespace LearnEntityFramework.EagerLoading
             Assert.Equal("Child1", result.Children.ToArray()[0].Name);
         }
         [Fact]
-        public async Task Test2()
+        public async Task LoadChildrenWithFilter()
         {
             var parent = new Parent
             {
@@ -85,7 +82,7 @@ namespace LearnEntityFramework.EagerLoading
         }
 
         [Fact]
-        public async Task Test3()
+        public async Task WithoutExplicitLoadingAndLinqMethodSyntax()
         {
             var parent = new Parent
             {
@@ -113,7 +110,7 @@ namespace LearnEntityFramework.EagerLoading
         }
 
         [Fact]
-        public async Task Test4()
+        public async Task WithoutExplicitLoadingAndLinqQuerySyntax()
         {
             var dbParent = new Parent
             {
@@ -140,34 +137,5 @@ namespace LearnEntityFramework.EagerLoading
 
             Assert.NotNull(result);
         }
-    }
-
-    [Table("Parent")]
-    public class Parent
-    {
-        [Key]
-        public int Id { get; set; }
-        public string Name { get; set; }
-
-        [ForeignKey("ParentId")]
-        public ICollection<Child> Children { get; set; }
-    }
-
-    [Table("Child")]
-    public class Child
-    {
-        [Key]
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public int ParentId { get; set; }
-  }
-
-    public class MyContext : DbContext
-    {
-        public DbSet<Parent> Parent { get; set; }
-        public DbSet<Child> Child { get; set; }
-
-        public MyContext() : base() {}
-        public MyContext(DbContextOptions<MyContext> options): base(options) {}
     }
 }

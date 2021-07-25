@@ -12,6 +12,9 @@ Tests runs against In-Memory SQLite database. It may not fit the production data
 ## Run tests
 
 ```sh
+# Using docker (not tested)
+# docker run --rm --volume $(pwd):/project --workdir /project mcr.microsoft.com/dotnet/sdk:5.0 dotnet test
+
 # All tests
 dotnet test
 
