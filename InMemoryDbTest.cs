@@ -26,9 +26,6 @@ namespace LearnEntityFramework
                 .Options;
 
             var dbContext = Activator.CreateInstance(typeof(T), new object[] { options }) as T;
-
-            // https://docs.microsoft.com/en-us/ef/core/querying/tracking
-            dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             dbContext.Database.EnsureDeleted();
             dbContext.Database.EnsureCreated();
 

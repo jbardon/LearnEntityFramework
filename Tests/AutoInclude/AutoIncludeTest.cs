@@ -50,6 +50,7 @@ namespace LearnEntityFramework.AutoInclude
 
             var result = await dbContext.Parent
                 .IgnoreAutoIncludes() // Disable default auto include
+                .AsNoTracking()       // Don't use entities in memory added above
                 .FirstOrDefaultAsync();
 
             Assert.NotNull(result);

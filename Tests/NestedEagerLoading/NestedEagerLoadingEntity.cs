@@ -44,12 +44,12 @@ namespace LearnEntityFramework.NestedEagerLoading
         [Key]
         public int Id { get; set; }
         public string Name { get; set; }
-        public Baby1 Baby1 { get; set; }
+        public Baby Baby { get; set; }
         public int ParentId { get; set; }
     }
 
-    [Table("Baby1")]
-    public class Baby1
+    [Table("Baby")]
+    public class Baby
     {
         [Key]
         public int Id { get; set; }

@@ -31,12 +31,17 @@ namespace LearnEntityFramework.ExplicitLoading
                     }
                 }
             };
+
             await dbContext.Parent.AddAsync(parent);
             await dbContext.SaveChangesAsync();
 
-            var result = dbContext.Parent
-                .AsTracking() // Required when using dbContext.Entry
-                .FirstOrDefault();
+            // Mandatory to avoid EF to pick in-memory
+            // children added above
+            dbContext.ChangeTracker.Clear();
+
+            var result = dbContext.Parent.FirstOrDefault();
+            Assert.NotNull(result);
+            Assert.Null(result.Children);
 
             // Explicit loading
             await dbContext.Entry(result)
@@ -46,6 +51,7 @@ namespace LearnEntityFramework.ExplicitLoading
             Assert.Equal(2, result.Children.Count);
             Assert.Equal("Child1", result.Children.ToArray()[0].Name);
         }
+
         [Fact]
         public async Task LoadChildrenWithFilter()
         {
@@ -66,19 +72,23 @@ namespace LearnEntityFramework.ExplicitLoading
             };
             await dbContext.Parent.AddAsync(parent);
             await dbContext.SaveChangesAsync();
+            dbContext.ChangeTracker.Clear();
 
-            var parentResult = dbContext.Parent
-                .AsTracking()
-                .FirstOrDefault();
+            var result = dbContext.Parent.FirstOrDefault();
+            Assert.NotNull(result);
+            Assert.Null(result.Children);
 
-            var result = await dbContext.Entry(parentResult)
+            var childResult = await dbContext.Entry(result)
                 .Collection(parent => parent.Children)
                 .Query()
                 .Where(child => child.Id == 11)
                 .ToListAsync();
 
-            Assert.Single(result);
-            Assert.Equal("Child1", result[0].Name);
+            Assert.Single(result.Children);
+            Assert.Equal("Child1", result.Children.ToArray()[0].Name);
+
+            Assert.Single(childResult);
+            Assert.Equal("Child1", childResult[0].Name);
         }
 
         [Fact]

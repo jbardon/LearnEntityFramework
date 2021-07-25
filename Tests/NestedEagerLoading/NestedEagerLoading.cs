@@ -1,24 +1,19 @@
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 using Xunit.Abstractions;
 
-/*
-https://stackoverflow.com/questions/48462746/how-to-include-only-selected-properties-on-related-entities
-https://stackoverflow.com/questions/14512285/entity-framework-is-there-a-way-to-automatically-eager-load-child-entities-wit
-https://stackoverflow.com/questions/10822656/entity-framework-include-multiple-levels-of-properties
-*/
-
 namespace LearnEntityFramework.NestedEagerLoading
 {
     public class NestedEagerLoadingTest : InMemoryDb<NestedEagerLoadingContext>
     {
         public NestedEagerLoadingTest(ITestOutputHelper output) : base(output)
-        {}
+        {
+            // Ensure entities added before the test aren't in memory
+            // It makes sure the tests won't work without Include
+            dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+        }
 
         [Fact]
         public async Task ShortSyntaxAndSeparateAdd()
@@ -28,7 +23,7 @@ namespace LearnEntityFramework.NestedEagerLoading
                 Id = 1,
                 Name = "Grand Parent",
             };
-            await dbContext.GrandParents.AddAsync(grandParent);
+            await dbContext.GrandParent.AddAsync(grandParent);
 
             var parent = new Parent
             {
@@ -36,7 +31,7 @@ namespace LearnEntityFramework.NestedEagerLoading
                 Name = "Parent",
                 GrandParentId = 1
             };
-            await dbContext.Parents.AddAsync(parent);
+            await dbContext.Parent.AddAsync(parent);
 
             var child1 = new Child1
             {
@@ -54,26 +49,26 @@ namespace LearnEntityFramework.NestedEagerLoading
             };
             await dbContext.Child2.AddAsync(child2);
 
-            var baby1 = new Baby1
+            var baby = new Baby
             {
                 Id = 1121,
-                Name = "Baby1",
+                Name = "Baby",
                 Child2Id = 112
             };
-            await dbContext.Baby1.AddAsync(baby1);
+            await dbContext.Baby.AddAsync(baby);
             await dbContext.SaveChangesAsync();
 
-            var result = await dbContext.GrandParents
+            var result = await dbContext.GrandParent
                 .Include(grandParent => grandParent.Parent.Child1)
                 .Include(grandParent => grandParent.Parent.Child2)
-                .ThenInclude(child2 => child2.Baby1)
+                .ThenInclude(child2 => child2.Baby)
                 .FirstOrDefaultAsync();
 
             Assert.Equal(grandParent.Id, result.Id);
             Assert.Equal(grandParent.Parent.Id, result.Parent.Id);
             Assert.Equal(grandParent.Parent.Child1.ToArray()[0].Id, result.Parent.Child1.ToArray()[0].Id);
             Assert.Equal(grandParent.Parent.Child2.ToArray()[0].Id, result.Parent.Child2.ToArray()[0].Id);
-            Assert.Equal(grandParent.Parent.Child2.ToArray()[0].Baby1.Id, result.Parent.Child2.ToArray()[0].Baby1.Id);
+            Assert.Equal(grandParent.Parent.Child2.ToArray()[0].Baby.Id, result.Parent.Child2.ToArray()[0].Baby.Id);
         }
 
         [Fact]
@@ -95,28 +90,28 @@ namespace LearnEntityFramework.NestedEagerLoading
                         new Child2 {
                             Id = 112,
                             Name = "Child2",
-                            Baby1 = new Baby1 {
+                            Baby = new Baby {
                                 Id = 1121,
-                                Name = "Baby1"
+                                Name = "Baby"
                             }
                         }
                     }
                 }
             };
-            await dbContext.GrandParents.AddAsync(grandParent);
+            await dbContext.GrandParent.AddAsync(grandParent);
             await dbContext.SaveChangesAsync();
 
-            var result = await dbContext.GrandParents
+            var result = await dbContext.GrandParent
                 .Include(grandParent => grandParent.Parent.Child1)
                 .Include(grandParent => grandParent.Parent.Child2)
-                .ThenInclude(child2 => child2.Baby1)
+                .ThenInclude(child2 => child2.Baby)
                 .FirstOrDefaultAsync();
 
             Assert.Equal(grandParent.Id, result.Id);
             Assert.Equal(grandParent.Parent.Id, result.Parent.Id);
             Assert.Equal(grandParent.Parent.Child1.ToArray()[0].Id, result.Parent.Child1.ToArray()[0].Id);
             Assert.Equal(grandParent.Parent.Child2.ToArray()[0].Id, result.Parent.Child2.ToArray()[0].Id);
-            Assert.Equal(grandParent.Parent.Child2.ToArray()[0].Baby1.Id, result.Parent.Child2.ToArray()[0].Baby1.Id);
+            Assert.Equal(grandParent.Parent.Child2.ToArray()[0].Baby.Id, result.Parent.Child2.ToArray()[0].Baby.Id);
         }
 
         [Fact]
@@ -138,33 +133,33 @@ namespace LearnEntityFramework.NestedEagerLoading
                         new Child2 {
                             Id = 112,
                             Name = "Child2",
-                            Baby1 = new Baby1 {
+                            Baby = new Baby {
                                 Id = 1121,
-                                Name = "Baby1"
+                                Name = "Baby"
                             }
                         }
                     }
                 }
             };
-            await dbContext.GrandParents.AddAsync(grandParent);
+            await dbContext.GrandParent.AddAsync(grandParent);
             await dbContext.SaveChangesAsync();
 
-            var result = await dbContext.GrandParents
+            var result = await dbContext.GrandParent
                 .Include(grandParent => grandParent.Parent)
-                .ThenInclude(parent => parent.Child1)
-                .Include(grandParent => grandParent.Parent)
-                .ThenInclude(parent => parent.Child2)
 
                 // Not possible because Child2 is a list
                 // .ThenInclude(parent => parent.Child2.Baby1)
-                .ThenInclude(child2 => child2.Baby1)
+                .ThenInclude(parent => parent.Child2)
+                .ThenInclude(child2 => child2.Baby)
+                .Include(grandParent => grandParent.Parent)
+                .ThenInclude(parent => parent.Child1)
                 .FirstOrDefaultAsync();
 
             Assert.Equal(grandParent.Id, result.Id);
             Assert.Equal(grandParent.Parent.Id, result.Parent.Id);
             Assert.Equal(grandParent.Parent.Child1.ToArray()[0].Id, result.Parent.Child1.ToArray()[0].Id);
             Assert.Equal(grandParent.Parent.Child2.ToArray()[0].Id, result.Parent.Child2.ToArray()[0].Id);
-            Assert.Equal(grandParent.Parent.Child2.ToArray()[0].Baby1.Id, result.Parent.Child2.ToArray()[0].Baby1.Id);
+            Assert.Equal(grandParent.Parent.Child2.ToArray()[0].Baby.Id, result.Parent.Child2.ToArray()[0].Baby.Id);
         }
     }
 }
