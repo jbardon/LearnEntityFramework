@@ -8,15 +8,26 @@ Requirements: .NET 5 SDK
 Tests runs against In-Memory SQLite database. It may not fit the production database and has limitations. It means unit tests [may succeed  when production code fails](https://docs.microsoft.com/en-us/ef/core/testing/testing-sample#issues-using-different-database-providers) and vice versa.  
 
 
-[Tracking is disabled by default](https://docs.microsoft.com/en-us/ef/core/querying/tracking) to avoid false positive tests. The same context inserts data before the test and execute requests which allows EF to keep track of inserted data. It means a query without `Include` is able to return child entities when tracking is enabled.
+[Tracking is sometimes disabled](https://docs.microsoft.com/en-us/ef/core/querying/tracking) to avoid false positive tests. The same context inserts data before the test and execute queries which allows EF to keep track of inserted data. It means a query without `Include` is able to return child entities when tracking is enabled.
+
+<details>
+<summary>Several ways to disable tracking</summary>
+
+```cs
+// Disable for all queries (before inserts)
+dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+// Disable on single query
+dbContext.MyEntity.AsNoTracking().FirstOrDefaultAsync();
+
+// Clear after inserts
+dbContext.ChangeTracker.Clear();
+```
+
+</details>
 
 ## TODO
-* REWORD tracking in README: in case of tests context/tracking is filled
-    - dbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-    - AsNoTracking
-    - dbContext.ChangeTracker.Clear
-* Getting started: CRUD
-* Tracking
+* Getting started: More exemple without get (update, delete with attach)
 * Urls 
     - https://stackoverflow.com/questions/48462746/how-to-include-only-selected-properties-on-related-entities
     - https://stackoverflow.com/questions/14512285/entity-framework-is-there-a-way-to-automatically-eager-load-child-entities-wit

@@ -10,15 +10,20 @@ namespace LearnEntityFramework
     {
         protected readonly T dbContext;
         protected readonly ITestOutputHelper output;
+        private readonly SqliteConnection sqliteConnection;
 
         public InMemoryDb(ITestOutputHelper output) {
             this.output = output;
 
-            var connection = new SqliteConnection("Filename=:memory:");
-            connection.Open();
+            this.sqliteConnection = new SqliteConnection("Filename=:memory:");
+            this.sqliteConnection.Open();
 
+            this.dbContext = this.CreateContext();
+        }
+
+        public T CreateContext() {
             DbContextOptions<T> options = new DbContextOptionsBuilder<T>()
-                .UseSqlite(connection)
+                .UseSqlite(this.sqliteConnection)
 
                 // https://docs.microsoft.com/en-us/ef/core/logging-events-diagnostics/simple-logging
                 .LogTo(output.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Information)
@@ -29,7 +34,7 @@ namespace LearnEntityFramework
             dbContext.Database.EnsureDeleted();
             dbContext.Database.EnsureCreated();
 
-            this.dbContext = dbContext;
+            return dbContext;
         }
     }
 }
