@@ -3,10 +3,14 @@ using Microsoft.EntityFrameworkCore;
 using Xunit;
 using Xunit.Abstractions;
 
+/*
+  Resources:
+    - https://docs.microsoft.com/en-us/ef/core/change-tracking/
+    - https://docs.microsoft.com/en-us/ef/core/querying/tracking
+*/
 namespace LearnEntityFramework.TrackingBehavior
 {
-    // https://docs.microsoft.com/en-us/ef/core/change-tracking/
-    // https://docs.microsoft.com/en-us/ef/core/querying/tracking
+    
     public class TrackingBehaviorTest : InMemoryDb<TrackingBehaviorContext>
     {
         public TrackingBehaviorTest(ITestOutputHelper output) : base(output)

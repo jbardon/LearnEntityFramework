@@ -4,8 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Xunit;
 using Xunit.Abstractions;
 
-// https://docs.microsoft.com/en-us/ef/core/querying/related-data/explicit
-// https://www.entityframeworktutorial.net/EntityFramework4.3/explicit-loading-with-dbcontext.aspx
+
+/*
+  Resources:
+    - https://docs.microsoft.com/en-us/ef/core/querying/related-data/explicit
+    - https://www.entityframeworktutorial.net/EntityFramework4.3/explicit-loading-with-dbcontext.aspx
+*/
 namespace LearnEntityFramework.ExplicitLoading
 {
     public class ExplicitLoadingTest : InMemoryDb<ExplicitLoadingContext>
