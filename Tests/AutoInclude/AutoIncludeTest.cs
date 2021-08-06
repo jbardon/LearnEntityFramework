@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -82,6 +83,25 @@ namespace LearnEntityFramework.AutoInclude
             Assert.NotNull(result);
             Assert.NotNull(result.Child);
             Assert.Equal("Child1", result.Child.Name);
+        }
+
+        [Fact]
+        public async Task WithOwnedTypeCantQueryChild()
+        {
+            var parent = new Parent2
+            {
+                Id = 1,
+                Name = "Parent",
+                Child = new Child2
+                {
+                    Id = 11,
+                    Name = "Child1"
+                }
+            };
+            await dbContext.Parent2.AddAsync(parent);
+            await dbContext.SaveChangesAsync();
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => dbContext.Child2.FirstOrDefaultAsync());
         }
 
         [Fact]

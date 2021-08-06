@@ -26,14 +26,6 @@ dbContext.ChangeTracker.Clear();
 
 </details>
 
-## TODO
-* Getting started: More exemple without get (update, delete with attach), only select few fields
-    - https://stackoverflow.com/questions/48462746/how-to-include-only-selected-properties-on-related-entities
-    - https://stackoverflow.com/questions/58367172/ef-core-updating-an-entity-without-querying-it-first
-    - https://stackoverflow.com/questions/4218566/update-a-record-without-first-querying/8566906
-* Others
-    - https://davecallan.com/asnotracking-identity-resolution-available-entity-framework-core-5-0/
-    - https://www.thereformedprogrammer.net/ef-core-in-depth-what-happens-when-ef-core-reads-from-the-database/
 ## Run tests
 
 ```sh
@@ -49,3 +41,9 @@ dotnet test --logger "console;verbosity=detailed"
 # Filter tests
 dotnet test --filter "FullyQualifiedName~MultipleLevelEntityTest.Test2"
 ```
+
+## TODO
+* Optimized queries: delete with attach
+* Others
+    - https://davecallan.com/asnotracking-identity-resolution-available-entity-framework-core-5-0/
+    - https://www.thereformedprogrammer.net/ef-core-in-depth-what-happens-when-ef-core-reads-from-the-database/
