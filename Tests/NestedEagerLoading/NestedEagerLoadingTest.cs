@@ -151,6 +151,9 @@ namespace LearnEntityFramework.NestedEagerLoading
                 // .ThenInclude(parent => parent.Child2.Baby1)
                 .ThenInclude(parent => parent.Child2)
                 .ThenInclude(child2 => child2.Baby)
+
+                // Can repeat same include multiple times
+                // To use ThenInclude for other properties
                 .Include(grandParent => grandParent.Parent)
                 .ThenInclude(parent => parent.Child1)
                 .FirstOrDefaultAsync();

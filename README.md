@@ -27,13 +27,10 @@ dbContext.ChangeTracker.Clear();
 </details>
 
 ## TODO
-* Getting started: More exemple without get (update, delete with attach)
+* Getting started: More exemple without get (update, delete with attach), only select few fields
+    - https://stackoverflow.com/questions/48462746/how-to-include-only-selected-properties-on-related-entities
     - https://stackoverflow.com/questions/58367172/ef-core-updating-an-entity-without-querying-it-first
     - https://stackoverflow.com/questions/4218566/update-a-record-without-first-querying/8566906
-* AutoInclude
-    - https://stackoverflow.com/questions/48462746/how-to-include-only-selected-properties-on-related-entities
-    - https://stackoverflow.com/questions/14512285/entity-framework-is-there-a-way-to-automatically-eager-load-child-entities-wit
-    - https://stackoverflow.com/questions/10822656/entity-framework-include-multiple-levels-of-properties
 * Others
     - https://davecallan.com/asnotracking-identity-resolution-available-entity-framework-core-5-0/
     - https://www.thereformedprogrammer.net/ef-core-in-depth-what-happens-when-ef-core-reads-from-the-database/
